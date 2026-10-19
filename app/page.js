@@ -1,62 +1,8 @@
 import Image from "next/image";
-import Header from "./components/Header";
+import Link from "next/link";
 import Icon from "./components/Icons";
-
-const PHONE = "06 14 31 91 09";
-const TEL = "tel:+33614319109";
-const MAPS =
-  "https://www.google.com/maps/dir/?api=1&destination=34%20Rue%20du%20Professeur%20Devaux%2033800%20Bordeaux";
-
-const services = [
-  {
-    title: "Injecteurs grippés",
-    text: "Coincés dans la culasse. Je les sors sans ouvrir tout le moteur.",
-    image: "/images/injecteurs.jpg",
-    alt: "Mécanicien éclairant un compartiment moteur",
-    icon: "extractor",
-    position: "center 40%",
-  },
-  {
-    title: "Bougies de préchauffage",
-    text: "Cassées au démontage. Le reste de la bougie sort du puits.",
-    image: "/images/bougies.jpg",
-    alt: "Clé sur le haut d’un moteur",
-    icon: "plug",
-    position: "18% 45%",
-  },
-  {
-    title: "Écrous antivol",
-    text: "Clé perdue ou douille foirée. La roue est libérée sur place.",
-    image: "/images/ecrous.jpg",
-    alt: "Jante et écrous de roue",
-    icon: "nut",
-    position: "center 55%",
-  },
-  {
-    title: "Vis et goujons cassés",
-    text: "Vis noyée, goujon arraché. J’extrais, puis je reprends le filetage si besoin.",
-    image: "/images/vis.jpg",
-    alt: "Clés et pinces sur un établi",
-    icon: "screw",
-    position: "center 40%",
-  },
-  {
-    title: "Compresseurs de clim",
-    text: "Je refais le compresseur pour retrouver le froid.",
-    image: "/images/clim.jpg",
-    alt: "Courroie et compresseur sur un moteur",
-    icon: "snow",
-    position: "center 45%",
-  },
-  {
-    title: "Urgence sur place",
-    text: "J’interviens sur le véhicule, chez vous ou là où il est arrêté.",
-    image: "/images/deplacement.jpg",
-    alt: "Intervention sous un véhicule",
-    icon: "pin",
-    position: "center 60%",
-  },
-];
+import ServiceCard from "./components/ServiceCard";
+import { PHONE, TEL, offers } from "./data/site";
 
 const points = [
   { icon: "extractor", label: "Outillage d’extraction" },
@@ -67,9 +13,7 @@ const points = [
 
 export default function Home() {
   return (
-    <>
-      <Header />
-      <main>
+    <main>
         <section className="hero" id="top">
           <Image
             src="/images/hero.jpg"
@@ -148,36 +92,16 @@ export default function Home() {
                   Quatre pannes reviennent sans arrêt. Les garages les renvoient,
                   ou proposent de changer le bloc. C’est exactement le travail.
                 </p>
-                <a href="#contact">
-                  Infos pratiques
+                <Link href="/interventions">
+                  Toutes les interventions
                   <Icon name="arrow" />
-                </a>
+                </Link>
               </div>
             </div>
 
             <div className="cards">
-              {services.map((service) => (
-                <article className="card" key={service.title}>
-                  <div className="card-photo">
-                    <Image
-                      src={service.image}
-                      alt={service.alt}
-                      fill
-                      sizes="(max-width: 720px) 100vw, 33vw"
-                      style={{ objectPosition: service.position }}
-                    />
-                    <span className="card-badge">
-                      <Icon name={service.icon} />
-                    </span>
-                  </div>
-                  <div className="card-body">
-                    <h3>{service.title}</h3>
-                    <p>{service.text}</p>
-                    <a className="card-go" href={TEL} aria-label={`Appeler pour ${service.title}`}>
-                      <Icon name="arrow" />
-                    </a>
-                  </div>
-                </article>
+              {offers.map((offer) => (
+                <ServiceCard key={offer.slug} offer={offer} />
               ))}
             </div>
           </div>
@@ -216,10 +140,15 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <a className="btn" href={TEL}>
-              Appeler
-              <Icon name="arrow" />
-            </a>
+            <div className="about-actions">
+              <a className="btn" href={TEL}>
+                Appeler
+                <Icon name="arrow" />
+              </a>
+              <Link className="link-quiet" href="/metier">
+                Le métier
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -266,58 +195,6 @@ export default function Home() {
             </a>
           </div>
         </section>
-      </main>
-
-      <footer className="site-footer" id="contact">
-        <div className="wrap footer-grid">
-          <div>
-            <p className="footer-brand">Méca-Extraction33</p>
-            <p className="footer-lead">
-              Extraction mécanique. Injecteurs, bougies, écrous antivol, vis
-              cassées, compresseurs de clim.
-            </p>
-          </div>
-          <div>
-            <p className="footer-label">Téléphone</p>
-            <a className="footer-phone" href={TEL}>
-              {PHONE}
-            </a>
-            <p className="footer-note">Appel ou SMS.</p>
-          </div>
-          <div>
-            <p className="footer-label">Adresse</p>
-            <p>
-              34 rue du Professeur Devaux
-              <br />
-              33800 Bordeaux
-            </p>
-            <a className="footer-link" href={MAPS} target="_blank" rel="noreferrer">
-              Itinéraire
-            </a>
-          </div>
-          <div>
-            <p className="footer-label">Horaires</p>
-            <p>
-              Lundi – samedi
-              <br />
-              9h – 18h
-            </p>
-            <p className="footer-note">Dimanche fermé.</p>
-          </div>
-        </div>
-        <div className="map">
-          <iframe
-            title="Méca-Extraction33, 34 rue du Professeur Devaux, Bordeaux"
-            src="https://maps.google.com/maps?q=34%20Rue%20du%20Professeur%20Devaux%2C%2033800%20Bordeaux&z=16&hl=fr&output=embed"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        </div>
-        <div className="wrap footer-bottom">
-          <p>© {new Date().getFullYear()} Méca-Extraction33 · Bordeaux</p>
-          <p>Photos d’illustration.</p>
-        </div>
-      </footer>
-    </>
+    </main>
   );
 }

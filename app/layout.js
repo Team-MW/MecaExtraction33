@@ -1,5 +1,7 @@
 import "./globals.css";
 import { Newsreader, Oswald, Source_Sans_3 } from "next/font/google";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const display = Oswald({
   subsets: ["latin"],
@@ -68,7 +70,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr" className={`${display.variable} ${sans.variable} ${serif.variable}`}>
       <body>
+        <Header />
         {children}
+        <Footer />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

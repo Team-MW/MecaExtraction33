@@ -1,42 +1,61 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Icon from "./Icons";
 
 const LINKS = [
-  { href: "#top", id: "top", label: "Accueil" },
-  { href: "#interventions", id: "interventions", label: "Interventions" },
-  { href: "#metier", id: "metier", label: "Le métier" },
-  { href: "#contact", id: "contact", label: "Contact" },
+  { href: "/", label: "Accueil" },
+  { href: "/interventions", label: "Interventions" },
+  { href: "/metier", label: "Le métier" },
+  { href: "/contact", label: "Contact" },
 ];
 
+function isCurrent(path, href) {
+  if (href === "/") return path === "/";
+  return path === href || path.startsWith(`${href}/`);
+}
+
 export default function Header() {
+  const path = usePathname();
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("top");
+  const [compact, setCompact] = useState(false);
 
   useEffect(() => {
-    const nodes = LINKS.map((link) => document.getElementById(link.id)).filter(Boolean);
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        });
-      },
-      { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
-    );
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+    const query = window.matchMedia("(max-width: 1080px)");
+    const apply = () => setCompact(query.matches);
+    apply();
+    query.addEventListener("change", apply);
+    return () => query.removeEventListener("change", apply);
   }, []);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [path]);
+
+  useEffect(() => {
+    if (!compact) setOpen(false);
+  }, [compact]);
 
   useEffect(() => {
     document.body.classList.toggle("nav-lock", open);
     return () => document.body.classList.remove("nav-lock");
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
-    <header className="site-header">
+    <header className={open ? "site-header is-open" : "site-header"}>
       <div className="wrap header-bar">
-        <a className="logo" href="#top" onClick={() => setOpen(false)}>
+        <Link className="logo" href="/" onClick={() => setOpen(false)}>
           <span className="logo-mark">
             <Icon name="wrench" />
           </span>
@@ -44,19 +63,27 @@ export default function Header() {
             <strong>Méca-Extraction33</strong>
             <small>Bordeaux</small>
           </span>
-        </a>
+        </Link>
 
-        <nav id="nav-panel" className={open ? "nav open" : "nav"} aria-label="Navigation">
+        <nav
+          id="nav-panel"
+          className={open ? "nav open" : "nav"}
+          aria-label="Navigation"
+          inert={compact && !open ? true : undefined}
+        >
           {LINKS.map((link) => (
-            <a
-              key={link.id}
+            <Link
+              key={link.href}
               href={link.href}
-              className={active === link.id ? "active" : undefined}
+              className={isCurrent(path, link.href) ? "active" : undefined}
               onClick={() => setOpen(false)}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
+          <a className="nav-call" href="tel:+33614319109" onClick={() => setOpen(false)}>
+            06 14 31 91 09
+          </a>
         </nav>
 
         <div className="header-tools">
@@ -70,16 +97,18 @@ export default function Header() {
             </span>
           </a>
           <button
-            className="burger"
+            className={open ? "burger is-open" : "burger"}
             type="button"
             aria-expanded={open}
             aria-controls="nav-panel"
             onClick={() => setOpen((value) => !value)}
           >
             <span className="sr-only">{open ? "Fermer le menu" : "Ouvrir le menu"}</span>
-            <i />
-            <i />
-            <i />
+            <span className="burger-icon" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
           </button>
         </div>
       </div>
